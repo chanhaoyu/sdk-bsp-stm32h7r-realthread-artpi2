@@ -168,8 +168,6 @@ extern "C" {
         .name = "uart5",                                            \
         .Instance = UART5,                                          \
         .irq_type = UART5_IRQn,                                     \
-        .tx_pin_name = BSP_UART5_TX_PIN,                            \
-        .rx_pin_name = BSP_UART5_RX_PIN,                            \
     }
 #endif /* UART5_CONFIG */
 

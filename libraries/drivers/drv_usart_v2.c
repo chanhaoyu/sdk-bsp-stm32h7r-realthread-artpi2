@@ -390,6 +390,7 @@ static rt_ssize_t stm32_transmit(struct rt_serial_device     *serial,
 
     if (uart->uart_dma_flag & RT_DEVICE_FLAG_DMA_TX)
     {
+        SCB_CleanDCache_by_Addr(buf, size);
         HAL_UART_Transmit_DMA(&uart->handle, buf, size);
         return size;
     }
@@ -1150,15 +1151,6 @@ static void stm32_dma_config(struct rt_serial_device *serial, rt_ubase_t flag)
         UNUSED(tmpreg);   /* To avoid compiler warnings */
     }
 
-    if (RT_DEVICE_FLAG_DMA_RX == flag)
-    {
-        __HAL_LINKDMA(&(uart->handle), hdmarx, uart->dma_rx.handle);
-    }
-    else if (RT_DEVICE_FLAG_DMA_TX == flag)
-    {
-        __HAL_LINKDMA(&(uart->handle), hdmatx, uart->dma_tx.handle);
-    }
-
 #if defined(SOC_SERIES_STM32F1) || defined(SOC_SERIES_STM32F0) || defined(SOC_SERIES_STM32L0)
     DMA_Handle->Instance                 = dma_config->Instance;
 #elif defined(SOC_SERIES_STM32F2) || defined(SOC_SERIES_STM32F4) || defined(SOC_SERIES_STM32F7)
@@ -1200,12 +1192,12 @@ static void stm32_dma_config(struct rt_serial_device *serial, rt_ubase_t flag)
     DMA_Handle->Init.DestBurstLength     = 1;
     DMA_Handle->Init.TransferAllocatedPort = DMA_SRC_ALLOCATED_PORT0|DMA_DEST_ALLOCATED_PORT0;
     DMA_Handle->Init.TransferEventMode   = DMA_TCEM_BLOCK_TRANSFER;
+    DMA_Handle->Init.Mode                = DMA_NORMAL;
     if (RT_DEVICE_FLAG_DMA_RX == flag)
     {
         DMA_Handle->Init.SrcInc              = DMA_SINC_FIXED;
         DMA_Handle->Init.DestInc             = DMA_DINC_INCREMENTED;
         DMA_Handle->Init.Direction           = DMA_PERIPH_TO_MEMORY;
-        DMA_Handle->Init.Mode                = DMA_NORMAL;
     }
     else if (RT_DEVICE_FLAG_DMA_TX == flag)
     {
@@ -1226,6 +1218,15 @@ static void stm32_dma_config(struct rt_serial_device *serial, rt_ubase_t flag)
     if (HAL_DMA_Init(DMA_Handle) != HAL_OK)
     {
         RT_ASSERT(0);
+    }
+
+    if (RT_DEVICE_FLAG_DMA_RX == flag)
+    {
+        __HAL_LINKDMA(&(uart->handle), hdmarx, uart->dma_rx.handle);
+    }
+    else if (RT_DEVICE_FLAG_DMA_TX == flag)
+    {
+        __HAL_LINKDMA(&(uart->handle), hdmatx, uart->dma_tx.handle);
     }
 
     /* enable interrupt */

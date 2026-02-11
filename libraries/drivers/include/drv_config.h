@@ -114,6 +114,7 @@ extern "C" {
 #include "config/pwm_config.h"
 #include "config/usbd_config.h"
 #elif  defined(SOC_SERIES_STM32H7RS)
+#include "config/dma_config.h"
 #include "config/uart_config.h"
 #include "config/spi_config.h"
 #endif

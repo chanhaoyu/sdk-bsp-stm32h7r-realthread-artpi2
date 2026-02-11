@@ -18,42 +18,40 @@
 extern "C" {
 #endif
 
-/* DMA1 stream0 */
-#if defined(BSP_UART1_RX_USING_DMA) && !defined(UART1_RX_DMA_INSTANCE)
-#define UART1_DMA_RX_IRQHandler          DMA1_Stream0_IRQHandler
-#define UART1_RX_DMA_RCC                 RCC_AHB1ENR_DMA1EN
-#define UART1_RX_DMA_INSTANCE            DMA1_Stream0
-#define UART1_RX_DMA_REQUEST             DMA_REQUEST_USART1_RX
-#define UART1_RX_DMA_IRQ                 DMA1_Stream0_IRQn
+/* GPDMA1_Channel0 */
+#if defined(BSP_UART1_TX_USING_DMA) && !defined(UART1_TX_DMA_INSTANCE)
+#define UART1_DMA_TX_IRQHandler          GPDMA1_Channel0_IRQHandler
+#define UART1_TX_DMA_RCC                 RCC_AHB1ENR_GPDMA1EN
+#define UART1_TX_DMA_INSTANCE            GPDMA1_Channel0
+#define UART1_TX_DMA_REQUEST             GPDMA1_REQUEST_USART1_TX
+#define UART1_TX_DMA_IRQ                 GPDMA1_Channel0_IRQn
 #endif
 
-/* DMA1 stream1 */
-#if defined(BSP_UART1_TX_USING_DMA) && !defined(UART1_TX_DMA_INSTANCE)
-#define UART1_DMA_TX_IRQHandler          DMA1_Stream1_IRQHandler
-#define UART1_TX_DMA_RCC                 RCC_AHB1ENR_DMA1EN
-#define UART1_TX_DMA_INSTANCE            DMA1_Stream1
-#define UART1_TX_DMA_REQUEST             DMA_REQUEST_USART1_TX
-#define UART1_TX_DMA_IRQ                 DMA1_Stream1_IRQn
+/* GPDMA1_Channel1 */
+#if defined(BSP_UART1_RX_USING_DMA) && !defined(UART1_RX_DMA_INSTANCE)
+#define UART1_DMA_RX_IRQHandler          GPDMA1_Channel1_IRQHandler
+#define UART1_RX_DMA_RCC                 RCC_AHB1ENR_GPDMA1EN
+#define UART1_RX_DMA_INSTANCE            GPDMA1_Channel1
+#define UART1_RX_DMA_REQUEST             GPDMA1_REQUEST_USART1_RX
+#define UART1_RX_DMA_IRQ                 GPDMA1_Channel1_IRQn
 #endif
 
 /* GPDMA1_Channel10 */
 #if defined(BSP_UART4_TX_USING_DMA) && !defined(UART4_TX_DMA_INSTANCE)
-#define UART4_DMA_TX_IRQHandler          GPDMA1_Channel0_IRQHandler
+#define UART4_DMA_TX_IRQHandler          GPDMA1_Channel10_IRQHandler
 #define UART4_TX_DMA_RCC                 RCC_AHB1ENR_GPDMA1EN
 #define UART4_TX_DMA_INSTANCE            GPDMA1_Channel10
 #define UART4_TX_DMA_REQUEST             GPDMA1_REQUEST_UART4_TX
-// #define UART4_TX_DMA_CHANNEL             GPDMA1_Channel0
-#define UART4_TX_DMA_IRQ                 GPDMA1_Channel0_IRQn
+#define UART4_TX_DMA_IRQ                 GPDMA1_Channel10_IRQn
 #endif
 
 /* GPDMA1_Channel11 */
 #if defined(BSP_UART4_RX_USING_DMA) && !defined(UART4_RX_DMA_INSTANCE)
-#define UART4_DMA_RX_IRQHandler          GPDMA1_Channel1_IRQHandler
+#define UART4_DMA_RX_IRQHandler          GPDMA1_Channel11_IRQHandler
 #define UART4_RX_DMA_RCC                 RCC_AHB1ENR_GPDMA1EN
 #define UART4_RX_DMA_INSTANCE            GPDMA1_Channel11
 #define UART4_RX_DMA_REQUEST             GPDMA1_REQUEST_UART4_RX
-// #define UART4_RX_DMA_CHANNEL             GPDMA1_Channel11
-#define UART4_RX_DMA_IRQ                 GPDMA1_Channel1_IRQn
+#define UART4_RX_DMA_IRQ                 GPDMA1_Channel11_IRQn
 #endif
 
 /* DMA1 stream3 */
