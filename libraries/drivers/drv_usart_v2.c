@@ -197,6 +197,21 @@ static rt_err_t stm32_configure(struct rt_serial_device *serial, struct serial_c
         return -RT_ERROR;
     }
 
+    if (HAL_UARTEx_SetTxFifoThreshold(&uart->handle, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    if (HAL_UARTEx_SetRxFifoThreshold(&uart->handle, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    if (HAL_UARTEx_EnableFifoMode(&uart->handle) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
     return RT_EOK;
 }
 
@@ -446,7 +461,7 @@ static void uart_isr(struct rt_serial_device *serial)
         struct rt_serial_rx_fifo *rx_fifo;
         rx_fifo = (struct rt_serial_rx_fifo *) serial->serial_rx;
         RT_ASSERT(rx_fifo != RT_NULL);
-
+        rt_kprintf("RXNE \n");
         rt_ringbuffer_putchar(&(rx_fifo->rb), UART_GET_RDR(&uart->handle, stm32_uart_get_mask(uart->handle.Init.WordLength, uart->handle.Init.Parity)));
 
         rt_hw_serial_isr(serial, RT_SERIAL_EVENT_RX_IND);
