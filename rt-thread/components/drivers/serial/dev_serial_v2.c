@@ -16,6 +16,10 @@
 #define DBG_LVL    DBG_INFO
 #include <rtdbg.h>
 
+#ifndef DMA_ALIGN_BYTES
+#define DMA_ALIGN_BYTES 32
+#endif
+
 #ifdef RT_USING_POSIX_STDIO
 #include <unistd.h>
 #include <fcntl.h>
@@ -781,11 +785,20 @@ static rt_err_t rt_serial_rx_enable(struct rt_device        *dev,
     if (serial->config.rx_bufsz < RT_SERIAL_RX_MINBUFSZ)
         serial->config.rx_bufsz = RT_SERIAL_RX_MINBUFSZ;
 
+    rt_uint8_t *aligned_buffer = RT_NULL;
+#ifdef RT_SERIAL_USING_DMA
+    rx_fifo = (struct rt_serial_rx_fifo *) rt_malloc
+            (sizeof(struct rt_serial_rx_fifo) + serial->config.rx_bufsz + DMA_ALIGN_BYTES);
+    aligned_buffer = (rt_uint8_t *)RT_ALIGN((rt_uint32_t)rx_fifo + sizeof(struct rt_serial_rx_fifo), DMA_ALIGN_BYTES);
+#else
     rx_fifo = (struct rt_serial_rx_fifo *) rt_malloc
             (sizeof(struct rt_serial_rx_fifo) + serial->config.rx_bufsz);
+    aligned_buffer = rx_fifo->buffer;
+#endif
+    rx_fifo->align_index = (aligned_buffer - rx_fifo->buffer)/sizeof(rt_uint8_t);
 
     RT_ASSERT(rx_fifo != RT_NULL);
-    rt_ringbuffer_init(&(rx_fifo->rb), rx_fifo->buffer, serial->config.rx_bufsz);
+    rt_ringbuffer_init(&(rx_fifo->rb), aligned_buffer, serial->config.rx_bufsz);
 
     serial->serial_rx = rx_fifo;
 

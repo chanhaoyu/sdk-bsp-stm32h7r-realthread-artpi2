@@ -405,7 +405,9 @@ static rt_ssize_t stm32_transmit(struct rt_serial_device     *serial,
 
     if (uart->uart_dma_flag & RT_DEVICE_FLAG_DMA_TX)
     {
+#if defined (__DCACHE_PRESENT) && (__DCACHE_PRESENT == 1U)
         SCB_CleanDCache_by_Addr(buf, size);
+#endif
         HAL_UART_Transmit_DMA(&uart->handle, buf, size);
         return size;
     }
@@ -435,7 +437,7 @@ static void dma_recv_isr(struct rt_serial_device *serial, rt_uint8_t isr_flag)
     {
 #if defined (__DCACHE_PRESENT) && (__DCACHE_PRESENT == 1U)
         struct rt_serial_rx_fifo *rx_fifo = (struct rt_serial_rx_fifo *) serial->serial_rx;
-        SCB_InvalidateDCache_by_Addr((uint32_t *)rx_fifo->buffer, serial->config.rx_bufsz);
+        SCB_InvalidateDCache_by_Addr((uint32_t *)&(rx_fifo->buffer[rx_fifo->align_index]), serial->config.rx_bufsz);
 #endif
         uart->dma_rx.remaining_cnt = counter;
         rt_hw_serial_isr(serial, RT_SERIAL_EVENT_RX_DMADONE | (recv_len << 8));
@@ -1249,7 +1251,7 @@ static void stm32_dma_config(struct rt_serial_device *serial, rt_ubase_t flag)
         rx_fifo = (struct rt_serial_rx_fifo *)serial->serial_rx;
         RT_ASSERT(rx_fifo != RT_NULL);
         /* Start DMA transfer */
-        if (HAL_UART_Receive_DMA(&(uart->handle), rx_fifo->buffer, serial->config.rx_bufsz) != HAL_OK)
+        if (HAL_UART_Receive_DMA(&(uart->handle), &(rx_fifo->buffer[rx_fifo->align_index]), serial->config.rx_bufsz) != HAL_OK)
         {
             /* Transfer error in reception process */
             RT_ASSERT(0);
@@ -1297,6 +1299,17 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     RT_ASSERT(huart != NULL);
     uart = (struct stm32_uart *)huart;
     dma_recv_isr(&uart->serial, UART_RX_DMA_IT_TC_FLAG);
+#if defined(SOC_SERIES_STM32H7RS)
+    struct rt_serial_device* serial = &uart->serial; 
+    struct rt_serial_rx_fifo *rx_fifo = (struct rt_serial_rx_fifo *)serial->serial_rx;
+    uart->dma_rx.remaining_cnt = serial->config.rx_bufsz;
+    /* Start DMA transfer */
+    if (HAL_UART_Receive_DMA(&(uart->handle), &(rx_fifo->buffer[rx_fifo->align_index]), serial->config.rx_bufsz) != HAL_OK)
+    {
+        /* Transfer error in reception process */
+        RT_ASSERT(0);
+    }
+#endif
 }
 
 /**
