@@ -12,22 +12,18 @@
 #include <rtdevice.h>
 #include "drv_common.h"
 
-#define LED_PIN GET_PIN(O, 5)
+extern void uart_echo_entry(void *parameter);
 
 int main(void)
 {
-    rt_uint32_t count = 1;
+    rt_thread_t tid;
 
-    rt_pin_mode(LED_PIN, PIN_MODE_OUTPUT);
-
-    while(count++)
-    {
-        rt_thread_mdelay(500);
-        rt_pin_write(LED_PIN, PIN_HIGH);
-        rt_thread_mdelay(500);
-        rt_pin_write(LED_PIN, PIN_LOW);
-    }
-    return RT_EOK;
+#ifdef RT_USING_HEAP
+    tid = rt_thread_create("uart_echo", uart_echo_entry, RT_NULL,
+                           1024, 20, 20);
+    RT_ASSERT(tid != RT_NULL);
+#endif /* RT_USING_HEAP */
+    rt_thread_startup(tid);
 }
 
 #include "stm32h7rsxx.h"

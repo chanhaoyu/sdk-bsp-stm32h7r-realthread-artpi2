@@ -117,6 +117,7 @@ extern "C" {
 #include "config/dma_config.h"
 #include "config/uart_config.h"
 #include "config/spi_config.h"
+#include "config/i2c_config.h"
 #endif
 
 #ifdef __cplusplus
