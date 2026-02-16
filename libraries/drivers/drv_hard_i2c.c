@@ -317,7 +317,7 @@ out:
         handle->Instance->CR1 |= I2C_IT_STOPI;
  /* defined(SOC_SERIES_STM32H7) */
 #elif defined(SOC_SERIES_STM32H7RS)
-        handle->Instance->CR2 != I2C_CR2_STOP
+        handle->Instance->CR2 != I2C_CR2_STOP;
 #endif
     }
     if (handle->ErrorCode == HAL_I2C_ERROR_BERR)
@@ -326,7 +326,7 @@ out:
 #ifndef SOC_SERIES_STM32H7RS
         handle->Instance->CR1 |= I2C_CR1_STOP;
 #else
-        handle->Instance->CR2 != I2C_CR2_STOP
+        handle->Instance->CR2 != I2C_CR2_STOP;
 #endif
         ret=i-1;
     }
