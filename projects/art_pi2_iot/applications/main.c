@@ -12,18 +12,9 @@
 #include <rtdevice.h>
 #include "drv_common.h"
 
-extern void uart_echo_entry(void *parameter);
-
 int main(void)
 {
-    rt_thread_t tid;
 
-#ifdef RT_USING_HEAP
-    tid = rt_thread_create("uart_echo", uart_echo_entry, RT_NULL,
-                           1024, 20, 20);
-    RT_ASSERT(tid != RT_NULL);
-#endif /* RT_USING_HEAP */
-    rt_thread_startup(tid);
 }
 
 #include "stm32h7rsxx.h"

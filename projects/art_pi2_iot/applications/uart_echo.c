@@ -41,3 +41,17 @@ void uart_echo_entry(void *parameter)
         rt_device_write(uart_dev, 0, r_buf, read_len);
     }
 }
+
+void uart_echo_init()
+{
+    rt_thread_t tid;
+
+#ifdef RT_USING_HEAP
+    tid = rt_thread_create("uart_echo", uart_echo_entry, RT_NULL,
+                           1024, 20, 20);
+    RT_ASSERT(tid != RT_NULL);
+#endif /* RT_USING_HEAP */
+    rt_thread_startup(tid);
+}
+
+INIT_APP_EXPORT(uart_echo_init);
