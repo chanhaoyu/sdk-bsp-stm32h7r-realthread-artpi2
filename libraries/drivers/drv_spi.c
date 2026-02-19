@@ -149,8 +149,6 @@ static rt_err_t stm32_spi_init(struct stm32_spi *spi_drv, struct rt_spi_configur
 
 #if defined(SOC_SERIES_STM32F0) || defined(SOC_SERIES_STM32G0)
     SPI_APB_CLOCK = HAL_RCC_GetPCLK1Freq();
-#elif defined(SOC_SERIES_STM32H7RS)
-    SPI_APB_CLOCK = HAL_RCC_GetSysClockFreq();
 #else
     SPI_APB_CLOCK = HAL_RCC_GetPCLK2Freq();
 #endif
@@ -264,7 +262,7 @@ static rt_err_t stm32_spi_init(struct stm32_spi *spi_drv, struct rt_spi_configur
     return RT_EOK;
 }
 
-static rt_uint32_t spixfer(struct rt_spi_device *device, struct rt_spi_message *message)
+static rt_ssize_t spixfer(struct rt_spi_device *device, struct rt_spi_message *message)
 {
     HAL_StatusTypeDef state;
     rt_size_t message_length, already_send_length;
@@ -283,7 +281,14 @@ static rt_uint32_t spixfer(struct rt_spi_device *device, struct rt_spi_message *
 
     if (message->cs_take)
     {
-        HAL_GPIO_WritePin(cs->GPIOx, cs->GPIO_Pin, GPIO_PIN_RESET);
+        if (cs)
+        {
+            HAL_GPIO_WritePin(cs->GPIOx, cs->GPIO_Pin, GPIO_PIN_RESET);
+        }
+        else 
+        {
+            rt_pin_write(device->cs_pin, GPIO_PIN_RESET);
+        }
     }
 
     LOG_D("%s transfer prepare and start", spi_drv->config->bus_name);
@@ -368,8 +373,15 @@ static rt_uint32_t spixfer(struct rt_spi_device *device, struct rt_spi_message *
     }
 
     if (message->cs_release)
-    {
-        HAL_GPIO_WritePin(cs->GPIOx, cs->GPIO_Pin, GPIO_PIN_SET);
+    {        
+        if (cs)
+        {
+            HAL_GPIO_WritePin(cs->GPIOx, cs->GPIO_Pin, GPIO_PIN_SET);
+        }
+        else 
+        {
+            rt_pin_write(device->cs_pin, GPIO_PIN_SET);
+        }
     }
 
     return message->length;
