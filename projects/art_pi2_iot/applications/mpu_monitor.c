@@ -39,7 +39,7 @@ void mpu_monitor_entry(void *parameter)
     return;
 }
 
-void mpu_monitor_init()
+static int mpu_monitor_init()
 {
     rt_thread_t tid;
 
@@ -51,4 +51,5 @@ void mpu_monitor_init()
     rt_thread_startup(tid);
 }
 
-INIT_APP_EXPORT(mpu_monitor_init);
+//INIT_APP_EXPORT(mpu_monitor_init);
+MSH_CMD_EXPORT(mpu_monitor_init, mpu monitor thread init);

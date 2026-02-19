@@ -42,7 +42,7 @@ void uart_echo_entry(void *parameter)
     }
 }
 
-void uart_echo_init()
+static int uart_echo_init()
 {
     rt_thread_t tid;
 
@@ -54,4 +54,5 @@ void uart_echo_init()
     rt_thread_startup(tid);
 }
 
-INIT_APP_EXPORT(uart_echo_init);
+//INIT_APP_EXPORT(uart_echo_init);
+MSH_CMD_EXPORT(uart_echo_init, uart echo thread init);
