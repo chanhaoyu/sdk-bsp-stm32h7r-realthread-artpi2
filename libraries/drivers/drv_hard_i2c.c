@@ -58,7 +58,7 @@ static rt_err_t stm32_i2c_init(struct stm32_i2c *i2c_drv)
 
     i2c_handle->Instance = cfg->Instance;
 #if defined(SOC_SERIES_STM32H7) || defined(SOC_SERIES_STM32H7RS)
-    i2c_handle->Init.Timing = 0x10707DBC;
+    i2c_handle->Init.Timing = 0x20C0EDFF;
 #endif /* defined(SOC_SERIES_STM32H7) */
 #if defined(SOC_SERIES_STM32F1) || defined(SOC_SERIES_STM32F4)
     i2c_handle->Init.ClockSpeed = 100000;
